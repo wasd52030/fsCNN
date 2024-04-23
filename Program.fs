@@ -3,6 +3,10 @@ open Tensorflow
 open Tensorflow.NumPy
 open type Tensorflow.Keras.Utils.np_utils
 open type Tensorflow.Binding
+open System.Collections.Generic
+open System
+open Plotly.NET
+open Plotly.NET.ImageExport
 
 let layers = keras.layers
 
@@ -40,11 +44,24 @@ let prepareData () =
 
     (x_train, y_train, x_test, y_test)
 
+let showTrainHistory (trainHistory: Dictionary<string, List<float32>>) =    
+    let train =
+        Chart.Line(x = [ 0 .. trainHistory["accuracy"].Count ], y = trainHistory["accuracy"], Name = "train")
+
+    let validation =
+        Chart.Line(x = [ 0 .. trainHistory["val_accuracy"].Count ], y = trainHistory["val_accuracy"], Name = "test")
+
+    let chart=Chart.combine ([| train; validation |]) |> Chart.withTitle "Train History"
+
+    chart|>Chart.saveJPG("trainHistory.png")
+    
+    chart|>Chart.show
 
 let train (model: Tensorflow.Keras.Engine.IModel) (x_train: NDArray, y_train) (x_test,y_test) =
     // train model by feeding data and labels.
     model.fit (x_train, y_train, batch_size = 200, epochs = 20, validation_split = 0.2f, verbose = 1)
-    |> ignore
+    |> fun callback -> callback.history
+    |> showTrainHistory
 
     model.evaluate (x_test, y_test, verbose = 2)
     |> Seq.iter (fun record -> printfn $"{record.Key} = {record.Value}")
