@@ -11,14 +11,14 @@ open Plotly.NET.ImageExport
 let layers = keras.layers
 
 let cnn =
-    let input = keras.Input(shape = Shape(28, 28, 1))
+    let input = keras.Input(Shape(28, 28, 1))
 
     let modelFlow =
         input
-        |> layers.Conv2D(16, 5, activation = "relu").Apply
-        |> layers.MaxPooling2D(2).Apply
-        |> layers.Conv2D(36, 5, activation = "relu").Apply
-        |> layers.MaxPooling2D(2).Apply
+        |> layers.Conv2D(16, Shape(5, 5), activation = "relu").Apply
+        |> layers.MaxPooling2D(Shape(2,2)).Apply
+        |> layers.Conv2D(36, Shape(5, 5), activation = "relu").Apply
+        |> layers.MaxPooling2D(Shape(2,2)).Apply
         |> layers.Flatten().Apply
         |> layers.Dense(128, activation = "relu").Apply
 
