@@ -53,7 +53,7 @@ let showTrainHistory (trainHistory: Dictionary<string, List<float32>>) =
 
     let chart=Chart.combine ([| train; validation |]) |> Chart.withTitle "Train History"
 
-    chart|>Chart.saveJPG("trainHistory.png")
+    chart|>Chart.savePNG("trainHistory")
     
     chart|>Chart.show
 
